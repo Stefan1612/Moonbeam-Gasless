@@ -86,8 +86,9 @@ const OwnNfts = (props) => {
                               <Paper elevation={24}>
                                 <Box padding={1.5}>
                                   <img
+                                    className="img1"
                                     width={"258vw"}
-                                    height={"258vh"}
+                                    height={"258vw"}
                                     alt="NFT"
                                     src={index.image}
                                   ></img>
@@ -119,6 +120,7 @@ const OwnNfts = (props) => {
                                   <Button
                                     variant={"outlined"}
                                     onClick={() => props.sellNFT(index)}
+                                    type="number"
                                   >
                                     Sell
                                   </Button>

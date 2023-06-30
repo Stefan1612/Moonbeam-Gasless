@@ -41,9 +41,20 @@ const Home = (props) => {
             <br></br>
             <div
               className="col-md-10 offset-md-1 "
-              style={{ marginTop: "6vh" }}
+              style={{ marginTop: "2vh" }}
             >
               <Container>
+                {" "}
+                <Box sx={{ textAlign: "center", marginTop: "2vh" }}>
+                  <Button
+                    onClick={(e) => props.loadOnSaleNFTs()}
+                    sx={{ color: "black", marginBottom: "10px" }}
+                    variant="contained"
+                  >
+                    {" "}
+                    Refresh
+                  </Button>
+                </Box>
                 {props.networkChainId === 5 && props.instance && (
                   <Box>
                     <Grid container spacing={4}>
@@ -57,6 +68,7 @@ const Home = (props) => {
                                   height={"258vh"}
                                   alt="NFT"
                                   src={index.image}
+                                  className="img1"
                                 ></img>
 
                                 <Typography component={"p"} variant={"h2"}>

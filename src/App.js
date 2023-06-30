@@ -230,7 +230,7 @@ function App() {
       setInstance(instance_M);
 
       // getting provider through web3modal instance
-      const provider_M = new ethers.providers.Web3Provider(instance_M);
+      const provider_M = new ethers.providers.Web3Provider(instance_M, "any");
 
       // getting signer and saving current provider
       let signer_M = provider_M.getSigner();
@@ -554,6 +554,7 @@ function App() {
         data.map(async (index) => {
           //getting the TokenURI using the erc721uri method from our nft contract
           let tokenID = index.tokenId;
+
           const tokenUri = await eventContractNFTInfura.tokenURI(
             tokenID.toNumber()
           );
@@ -641,28 +642,33 @@ function App() {
   // only [0.]..works as intended
 
   async function sellNFT(marketItem) {
-    const signer = provider.getSigner();
-    let contract = new ethers.Contract(
-      ContractAddress[5].NftMarketPlaceV2,
-      NftMarketPlace.abi,
-      signer
-    );
-    const nftContract = new ethers.Contract(
-      ContractAddress[5].NFTV2,
-      NFT.abi,
-      signer
-    );
-    let id = marketItem.tokenId;
-    id = id.toNumber();
-    await nftContract.setApprovalForAll(
-      ContractAddress[5].NftMarketPlaceV2,
-      true
-    );
-    /* let tx = */ await contract.sellMarketToken(
-      id,
-      previewPriceTwo /* ,
-      ContractAddress[5].NFT */
-    );
+    console.log("check if previewPrice set");
+    console.log(previewPriceTwo);
+    if (previewPriceTwo) {
+      console.log("initiate selling nft");
+      const signer = provider.getSigner();
+      let contract = new ethers.Contract(
+        ContractAddress[5001].NftMarketPlaceV2,
+        NftMarketPlace.abi,
+        signer
+      );
+      const nftContract = new ethers.Contract(
+        ContractAddress[5001].NFTV2,
+        NFT.abi,
+        signer
+      );
+      let id = marketItem.tokenId;
+      id = id.toNumber();
+      await nftContract.setApprovalForAll(
+        ContractAddress[5001].NftMarketPlaceV2,
+        true
+      );
+      /* let tx = */ await contract.sellMarketToken(
+        id,
+        previewPriceTwo /* ,
+        ContractAddress[5001].NFT */
+      );
+    }
   }
 
   /* const [newNftAddress, setNewNftAddress] = useState();
@@ -684,10 +690,23 @@ function App() {
   const handleChangePrice = (e) => {
     previewPrice = e.target.value;
     // you need to use dots instead of commas when using ether instead of wei
+
+    // if value is not blank, then test the regex
+    if (previewPrice === "") {
+      console.log("invalid price input");
+      return;
+    }
+
+    if (!Number(previewPrice)) {
+      window.alert('Only use numbers and/or a dot -> "."');
+      return;
+    }
+    console.log("setting price");
     previewPrice = previewPrice.toString();
     previewPrice = ethers.utils.parseEther(previewPrice);
     setPreviewPriceTwo(previewPrice);
     console.log(previewPriceTwo);
+    // you need to use dots instead of commas when using ether instead of wei
   };
 
   const projectId = process.env.REACT_APP_PORJECT_ID_IPFS; // <---------- your Infura Project ID
@@ -865,6 +884,7 @@ function App() {
                 buyNFT={buyNFT}
                 connectWallet={connectWallet}
                 changeNetworkToGoerli={changeNetworkToGoerli}
+                loadOnSaleNFTs={loadOnSaleNFTs}
               />
             }
           />
