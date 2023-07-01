@@ -63,6 +63,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // general theme set for our UI
 import theme from "./Components/theme/theme";
+const BigNumber = require("bignumber.js");
 
 function App() {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -625,17 +626,26 @@ function App() {
 
   //uint256 _tokenId, address _nftContractAddress, value
   async function buyNFT(marketItem) {
-    let id = marketItem.tokenId;
-    id = id.toNumber();
-    let price = marketItem.price;
-    price = ethers.utils.parseEther(price);
-    /* let tx = */ await signerContractMarket.buyMarketToken(
-      id,
-      /*  ContractAddress[5].NFT, */
-      {
-        value: price,
+    if (checkIfUserLoggedIn()) {
+      //make sure the user is connected to the correct network
+      if (checkIfUserConnectedToCorrectNetwork()) {
+        let id = marketItem.tokenId;
+        id = id.toNumber();
+        let price = marketItem.price;
+        price = ethers.utils.parseEther(price);
+        /* let tx = */ await signerContractMarket.buyMarketToken(
+          id,
+          /*  ContractAddress[5001].NFT, */
+          {
+            value: price,
+          }
+        );
+      } else {
+        window.alert("Change to the Mantle network");
       }
-    );
+    } else {
+      window.alert("You need to connect your wallet first");
+    }
   }
 
   // BUG: inputting a [0,]... bugs the website
@@ -776,27 +786,36 @@ function App() {
 
   //creating the NFT(first mint at ContractAddress[5].NftMarketPlace, second create market Token at market address)
   async function mintNFT(url) {
-    //make sure the user connected his wallet
-    if (checkIfUserLoggedIn()) {
-      //make sure the user is connected to the correct network
-      if (checkIfUserConnectedToCorrectNetwork()) {
-        let listingPrice = await eventContractMarket.getListingPrice();
-        listingPrice = listingPrice.toString();
+    // checking if user hat sufficient balance to pay the minting fee
+    let a = await infuraProvider.getBalance(account);
 
-        let contract = new ethers.Contract(
-          ContractAddress[5].NFTV2,
-          NFT.abi,
-          signer
-        );
+    let b = ethers.utils.formatEther(a);
+    console.log(b);
+    if (b >= 0.002) {
+      //make sure the user connected his wallet
+      if (checkIfUserLoggedIn()) {
+        //make sure the user is connected to the correct network
+        if (checkIfUserConnectedToCorrectNetwork()) {
+          let listingPrice = await eventContractMarket.getListingPrice();
+          listingPrice = listingPrice.toString();
 
-        await contract.createNFT(url, {
-          value: listingPrice,
-        });
+          let contract = new ethers.Contract(
+            ContractAddress[5].NFTV2,
+            NFT.abi,
+            signer
+          );
+
+          await contract.createNFT(url, {
+            value: listingPrice,
+          });
+        } else {
+          window.alert("Change to the Goerli network");
+        }
       } else {
-        window.alert("Change to the Goerli network");
+        window.alert("You need to connect your wallet first");
       }
     } else {
-      window.alert("You need to connect your wallet first");
+      window.alert("Insufficient funds");
     }
   }
 

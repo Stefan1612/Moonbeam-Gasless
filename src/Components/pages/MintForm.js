@@ -94,6 +94,10 @@ const MintForm = (props) => {
                       >
                         Mint NFT
                       </Button>
+                      <Typography>
+                        Minting Fee 0.002 ether. Make sure have sufficient
+                        balance.
+                      </Typography>
                     </Box>
                   )}
                   {!props.instance && (
