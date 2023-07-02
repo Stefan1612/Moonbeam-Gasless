@@ -627,21 +627,35 @@ function App() {
   //uint256 _tokenId, address _nftContractAddress, value
   async function buyNFT(marketItem) {
     if (checkIfUserLoggedIn()) {
-      //make sure the user is connected to the correct network
-      if (checkIfUserConnectedToCorrectNetwork()) {
-        let id = marketItem.tokenId;
-        id = id.toNumber();
-        let price = marketItem.price;
-        price = ethers.utils.parseEther(price);
-        /* let tx = */ await signerContractMarket.buyMarketToken(
-          id,
-          /*  ContractAddress[5001].NFT, */
-          {
-            value: price,
+      console.log(account);
+      let a = marketItem.seller;
+      a = a.toLowerCase();
+      if (account !== a) {
+        //make sure the user is connected to the correct network
+        if (checkIfUserConnectedToCorrectNetwork()) {
+          let a = await infuraProvider.getBalance(account);
+
+          let b = ethers.utils.formatEther(a);
+          if (b >= marketItem.price) {
+            let id = marketItem.tokenId;
+            id = id.toNumber();
+            let price = marketItem.price;
+            price = ethers.utils.parseEther(price);
+            /* let tx = */ await signerContractMarket.buyMarketToken(
+              id,
+              /*  ContractAddress[5].NFT, */
+              {
+                value: price,
+              }
+            );
+          } else {
+            window.alert("Insufficient funds");
           }
-        );
+        } else {
+          window.alert("Change to the Mantle network");
+        }
       } else {
-        window.alert("Change to the Mantle network");
+        window.alert("You are the seller of the nft");
       }
     } else {
       window.alert("You need to connect your wallet first");
@@ -658,25 +672,25 @@ function App() {
       console.log("initiate selling nft");
       const signer = provider.getSigner();
       let contract = new ethers.Contract(
-        ContractAddress[5001].NftMarketPlaceV2,
+        ContractAddress[5].NftMarketPlaceV2,
         NftMarketPlace.abi,
         signer
       );
       const nftContract = new ethers.Contract(
-        ContractAddress[5001].NFTV2,
+        ContractAddress[5].NFTV2,
         NFT.abi,
         signer
       );
       let id = marketItem.tokenId;
       id = id.toNumber();
       await nftContract.setApprovalForAll(
-        ContractAddress[5001].NftMarketPlaceV2,
+        ContractAddress[5].NftMarketPlaceV2,
         true
       );
       /* let tx = */ await contract.sellMarketToken(
         id,
         previewPriceTwo /* ,
-        ContractAddress[5001].NFT */
+        ContractAddress[5].NFT */
       );
     }
   }
@@ -697,20 +711,42 @@ function App() {
 
   //BUG when using input field and using a nft button on a completely different nft its still submitting the input price
   //changing price from ether(user Input) into wei for contract
+
+  var validNumber = new RegExp(/^\d*\.?\d*$/);
+
+  function validateNumber(elem) {
+    try {
+      if (validNumber.test(elem)) {
+        return true;
+      } else {
+        window.alert("invalid input");
+        return false;
+      }
+    } catch (error) {
+      window.alert("invalid input");
+      console.log(error);
+    }
+  }
+
   const handleChangePrice = (e) => {
     previewPrice = e.target.value;
     // you need to use dots instead of commas when using ether instead of wei
-
+    if (validateNumber(previewPrice) == false) {
+      return;
+    }
     // if value is not blank, then test the regex
     if (previewPrice === "") {
       console.log("invalid price input");
       return;
     }
 
+    /*
     if (!Number(previewPrice)) {
-      window.alert('Only use numbers and/or a dot -> "."');
-      return;
-    }
+      if (previewPrice !== "0") {
+        window.alert('Only use numbers and/or a dot -> "."');
+        return;
+      }
+    } */
     console.log("setting price");
     previewPrice = previewPrice.toString();
     previewPrice = ethers.utils.parseEther(previewPrice);
