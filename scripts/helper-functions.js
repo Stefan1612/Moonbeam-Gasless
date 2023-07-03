@@ -105,6 +105,9 @@ exports.printEtherscanLink = (address, chainId, type = "address") => {
     case 137:
       link = "https://polygonscan.com";
       break;
+    case 1287:
+      link = "https://moonbase.moonscan.io/";
+      break;
     case 80001:
       link = "https://mumbai.polygonscan.com";
       break;
@@ -157,6 +160,9 @@ exports.printEtherscanLink = (address, chainId, type = "address") => {
       break;
     case 137:
       link = "https://polygonscan.com";
+      break;
+    case 1287:
+      link = "https://moonbase.moonscan.io/";
       break;
     case 80001:
       link = "https://mumbai.polygonscan.com";

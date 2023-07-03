@@ -14,6 +14,7 @@ const {
   COINMARKETCAP_API_KEY,
   APP_RINKEBY_ENDPOINT,
   APP_GOERLI_ENDPOINT,
+  REACT_APP_PROJECT_ENDPOINT_MOONBEAM_ALPHA,
 } = process.env;
 // eslint-disable-next-line
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
@@ -40,6 +41,11 @@ module.exports = {
     goerli: {
       chainId: 5,
       url: APP_GOERLI_ENDPOINT,
+      accounts: [APP_PRIVATE_KEY],
+    },
+    moonbaseAlpha: {
+      url: REACT_APP_PROJECT_ENDPOINT_MOONBEAM_ALPHA,
+      chainId: 1287,
       accounts: [APP_PRIVATE_KEY],
     },
   },

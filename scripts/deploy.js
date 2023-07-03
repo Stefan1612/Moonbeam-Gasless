@@ -5,12 +5,15 @@ const {
   printEtherscanLink,
 } = require("./helper-functions");
 
+/* const BatchAbi = require("./artifacts/contracts/Batch.sol/Batch.json"); */
+/* import BatchAbi from "./artifacts/contracts/Batch.sol/Batch.json"; */
 const { ethers, network } = hre;
 
 let DutchAuctionFactoryaddress = "";
 let EngAuctionFactoryaddress = "";
 let NftAddressV2 = "";
 let NFTMarketplaceAddressV2 = "";
+let BatchAddress = "";
 
 // Biconomy GOERLI forwarder address to enable native meta transactions
 
@@ -44,6 +47,9 @@ async function deploy(contractName, args = []) {
     case "NFTV2":
       NftAddressV2 = contract.address;
       break;
+    case "Batch":
+      BatchAddress = contract.address;
+      break;
     default:
       console.log("Wrong contract");
   }
@@ -51,6 +57,10 @@ async function deploy(contractName, args = []) {
 }
 
 async function main() {
+  /* await ethers.getContractAt(
+    "Batch",
+    "0x0000000000000000000000000000000000000808"
+  ); */
   await deploy("DutchAuctionFactory");
   await deploy("EngAuctionFactory");
   await deploy("NftMarketPlaceV2", [

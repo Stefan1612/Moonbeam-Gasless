@@ -33,7 +33,7 @@ const Buttons = (props) => {
         sx={{ marginLeft: "5px" }}
         onClick={(e) => props.changeNetworkToGoerli()}
       >
-        Switch to Goerli!
+        Switch to Moonbase Alpha!
       </Button>
     </Box>
   );

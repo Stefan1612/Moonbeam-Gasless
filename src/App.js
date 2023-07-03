@@ -132,37 +132,48 @@ function App() {
     projectId: process.env.REACT_APP_PROJECT_ID,
     projectSecret: process.env.REACT_APP_PROJECT_SECRET,
   });
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // -----------------------------------
+  // Moonbase Alpha provider
+  // -----------------------------------
+
+  // To connect to a custom URL:
+  let customHttpsProvider = new ethers.providers.JsonRpcProvider(
+    /* "https://rpc.api.moonbase.moonbeam.network" */ /*  "https://moonbase-rpc.dwellir.com" */ /* "https://moonbeam-alpha.api.onfinality.io/public" */ /* "https://moonbase-alpha.public.blastapi.io" */ process.env.REACT_APP_PROJECT_ENDPOINT_MOONBEAM_ALPHA
+  );
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // market
   const eventContractMarket = new ethers.Contract(
-    ContractAddress[5].NftMarketPlaceV2,
+    ContractAddress[1287].NftMarketPlaceV2,
     NftMarketPlace.abi,
     //infuraProvider //
     provider
   );
   //nft
   const eventContractNFT = new ethers.Contract(
-    ContractAddress[5].NFTV2,
+    ContractAddress[1287].NFTV2,
     NFT.abi,
     //infuraProvider //
     provider
   );
   const eventContractMarketInfura = new ethers.Contract(
-    ContractAddress[5].NftMarketPlaceV2,
+    ContractAddress[1287].NftMarketPlaceV2,
     NftMarketPlace.abi,
-    infuraProvider
+    //  infuraProvider
+    customHttpsProvider
   );
   const eventContractNFTInfura = new ethers.Contract(
-    ContractAddress[5].NFTV2,
+    ContractAddress[1287].NFTV2,
     NFT.abi,
-    infuraProvider
+    // infuraProvider
+    customHttpsProvider
   );
   //signer calls
   //market
   const signerContractMarket = new ethers.Contract(
-    ContractAddress[5].NftMarketPlaceV2,
+    ContractAddress[1287].NftMarketPlaceV2,
     NftMarketPlace.abi,
     signer
   );
@@ -371,7 +382,12 @@ function App() {
           name: "kovan",
         });
         break;
-
+      case "1287":
+        setNetwork({
+          chainId: 1287,
+          name: "Moonbase Alpha",
+        });
+        break;
       default:
         setNetwork({
           chainId: "",
@@ -507,6 +523,7 @@ function App() {
   const [ownNFTs, setOwnNFTs] = useState([]);
 
   async function axiosGetTokenData(data) {
+    console.log("axiosgetTokenData start");
     const tokenData = await Promise.all(
       data.map(async (index) => {
         //getting the TokenURI using the erc721uri method from our nft contract
@@ -535,7 +552,7 @@ function App() {
   }
 
   async function loadOwnNFTs() {
-    if (isProviderSet /* instance */ && network.chainId === 5) {
+    if (isProviderSet /* instance */ && network.chainId === 1287) {
       let data = await signerContractMarket.fetchAllMyTokens();
       console.log(data);
       let tokenData = await axiosGetTokenData(data);
@@ -586,10 +603,10 @@ function App() {
   const [mintedNFTs, setMintedNFTs] = useState([]);
 
   async function loadMintedNFTs() {
-    if (isProviderSet /* instance */ && network.chainId === 5) {
+    if (isProviderSet /* instance */ && network.chainId === 1287) {
       console.log("load Minted NFTS");
       const signerContractNFT = new ethers.Contract(
-        ContractAddress[5].NFTV2,
+        ContractAddress[1287].NFTV2,
         NFT.abi,
         signer
       );
@@ -643,7 +660,7 @@ function App() {
             price = ethers.utils.parseEther(price);
             /* let tx = */ await signerContractMarket.buyMarketToken(
               id,
-              /*  ContractAddress[5].NFT, */
+              /*  ContractAddress[1287].NFT, */
               {
                 value: price,
               }
@@ -661,9 +678,25 @@ function App() {
       window.alert("You need to connect your wallet first");
     }
   }
+  // ---------------------------------------------------------------------
 
-  // BUG: inputting a [0,]... bugs the website
-  // only [0.]..works as intended
+  // generating the calldata needed for batching transactions
+
+  function generatingCallDataForMoonbeam(...arg) {
+    let ABI = ["function approve(address to, uint256 tokenId)"];
+
+    let iface = new ethers.utils.Interface(ABI);
+    let dataOne = iface.encodeFunctionData("approve", [arg[0], arg[1]]);
+    console.log(dataOne);
+
+    ABI = ["function sellMarketToken(uint256 _tokenId, uint256 sellPrice)"];
+    iface = new ethers.utils.Interface(ABI);
+    let dataTwo = iface.encodeFunctionData("sellMarketToken", [arg[1], arg[2]]);
+    console.log(dataTwo);
+    return [dataOne, dataTwo];
+  }
+
+  // ---------------------------------------------------------------------
 
   async function sellNFT(marketItem) {
     console.log("check if previewPrice set");
@@ -672,27 +705,43 @@ function App() {
       console.log("initiate selling nft");
       const signer = provider.getSigner();
       let contract = new ethers.Contract(
-        ContractAddress[5].NftMarketPlaceV2,
+        ContractAddress[1287].NftMarketPlaceV2,
         NftMarketPlace.abi,
         signer
       );
       const nftContract = new ethers.Contract(
-        ContractAddress[5].NFTV2,
+        ContractAddress[1287].NFTV2,
         NFT.abi,
         signer
       );
       let id = marketItem.tokenId;
       id = id.toNumber();
-      await nftContract.setApprovalForAll(
-        ContractAddress[5].NftMarketPlaceV2,
+
+      /* await nftContract.setApprovalForAll(
+        ContractAddress[1287].NftMarketPlaceV2,
         true
+      ); */
+
+      // ---------------------------------------------------------------------
+
+      // -----------------------------------
+      // MOONBEAM: BATCHING
+      // -----------------------------------
+      generatingCallDataForMoonbeam(
+        ContractAddress[1287].NftMarketPlaceV2,
+        id,
+        previewPriceTwo
       );
-      /* let tx = */ await contract.sellMarketToken(
+      await nftContract.approve(ContractAddress[1287].NftMarketPlaceV2, id);
+
+      await contract.sellMarketToken(
         id,
         previewPriceTwo /* ,
-        ContractAddress[5].NFT */
+        ContractAddress[1287].NFT */
       );
     }
+
+    // ---------------------------------------------------------------------
   }
 
   /* const [newNftAddress, setNewNftAddress] = useState();
@@ -820,7 +869,7 @@ function App() {
     }
   }
 
-  //creating the NFT(first mint at ContractAddress[5].NftMarketPlace, second create market Token at market address)
+  //creating the NFT(first mint at ContractAddress[1287].NftMarketPlace, second create market Token at market address)
   async function mintNFT(url) {
     // checking if user hat sufficient balance to pay the minting fee
     let a = await infuraProvider.getBalance(account);
@@ -836,7 +885,7 @@ function App() {
           listingPrice = listingPrice.toString();
 
           let contract = new ethers.Contract(
-            ContractAddress[5].NFTV2,
+            ContractAddress[1287].NFTV2,
             NFT.abi,
             signer
           );
@@ -864,14 +913,14 @@ function App() {
 
   function changeNetworkToGoerli() {
     if (provider) {
-      if (network.chainId === 5) {
-        window.alert("already connected to Goerli!");
+      if (network.chainId === 1287) {
+        window.alert("already connected to Moonbase Alpha!");
       } else {
         instance.request({
           /* method: "wallet_addEthereumChain", */
           method: "wallet_switchEthereumChain",
           params: [
-            { chainId: "0x5" },
+            { chainId: "0x507" },
             /*  {
               chainId: "0x5",
               rpcUrls: [
@@ -904,7 +953,7 @@ function App() {
 
   /// check if user is connected to the correct network(where NFT-marketplace/Nft contracts/... are deployed)
   function checkIfUserConnectedToCorrectNetwork() {
-    if (network.chainId === 5) {
+    if (network.chainId === 1287) {
       return true;
     }
   }

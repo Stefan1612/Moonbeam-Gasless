@@ -40,7 +40,7 @@ const TourCard = (props) => {
                   <div className="card-text" id="nftDescription">
                     {props.index.description}
                   </div>
-                  <div id="nftPrice">{props.index.price} Ether</div>
+                  <div id="nftPrice">{props.index.price} DEV</div>
                   <button
                     className="btn btn-success"
                     id="nftBuy"

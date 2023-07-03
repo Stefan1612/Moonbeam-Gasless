@@ -81,7 +81,7 @@ const Home = (props) => {
                               </Typography>
 
                               <Typography component={"p"} variant={"h3"}>
-                                {index.price} Ether
+                                {index.price} DEV
                               </Typography>
                               <Typography style={{ color: "white" }}>
                                 Current Seller: &nbsp;

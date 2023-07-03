@@ -70,22 +70,22 @@ const MintForm = (props) => {
                   <Input type="file" name="Asset" onChange={props.onChange} />
                   <br></br>
                   <br></br>
-                  {props.networkChain.chainId !== 5 && props.instance && (
+                  {props.networkChain.chainId !== 1287 && props.instance && (
                     <Box>
                       <Typography>
-                        Hey! You are not connected to Mantle. You need to be on
-                        the Mantle network! Change network here:
+                        Hey! You are not connected to Moonbase Alpha. You need
+                        to be on the Moonbase Alpha! Change network here:
                       </Typography>
                       <Button
                         variant="outlined"
                         onClick={(e) => props.changeNetworkToMantle()}
                       >
-                        Switch to Mantle!
+                        Switch to Moonbase Alpha!
                       </Button>
                     </Box>
                   )}
 
-                  {props.networkChain.chainId === 5 && props.instance && (
+                  {props.networkChain.chainId === 1287 && props.instance && (
                     <Box>
                       <Button
                         variant={"contained"}
@@ -95,7 +95,7 @@ const MintForm = (props) => {
                         Mint NFT
                       </Button>
                       <Typography>
-                        Minting Fee 0.002 ether. Make sure have sufficient
+                        Minting Fee 0.002 DEV. Make sure have sufficient
                         balance.
                       </Typography>
                     </Box>
@@ -138,7 +138,7 @@ const MintForm = (props) => {
                           NFT Description
                         </Typography>
                         <Typography component={"p"} variant={"h3"}>
-                          Price in Ether
+                          Price in DEV
                         </Typography>
                         <Typography style={{ color: "white" }}>
                           Current Seller: &nbsp;

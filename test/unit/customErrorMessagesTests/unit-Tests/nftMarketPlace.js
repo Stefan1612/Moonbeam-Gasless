@@ -34,14 +34,14 @@ describe("NftMarketPlace", function () {
     const Market = await ethers.getContractFactory("NftMarketPlaceV2");
     market = await Market.deploy(
       dutchAuctionFactoryaddress,
-      englishAuctionFactoryaddress,
-      forwarderAddress
+      englishAuctionFactoryaddress /* ,
+      forwarderAddress */
     );
     await market.deployed();
     marketAddress = market.address;
 
     const NFT = await ethers.getContractFactory("NFTV2");
-    nft = await NFT.deploy(marketAddress, forwarderAddress);
+    nft = await NFT.deploy(marketAddress /* , forwarderAddress */);
     await nft.deployed();
     nftContractAddress = nft.address;
 
@@ -120,15 +120,18 @@ describe("NftMarketPlace", function () {
         value: toWei(0.003),
       })
     ).to.be.revertedWith("NftMarketPlace__DidNotPayLISTINGPRICE");
+    await nft.approve(marketAddress, 1);
     // putting up 3 nft's for sale
     await market.sellMarketToken(
       1,
       200 // , nftContractAddress
     );
+    await nft.approve(marketAddress, 2);
     await market.sellMarketToken(
       2,
       200 // , nftContractAddress
     );
+    await nft.approve(marketAddress, 3);
     await market.sellMarketToken(
       3,
       200 // , nftContractAddress
@@ -186,7 +189,8 @@ describe("NftMarketPlace", function () {
     ).to.be.revertedWith("NftMarketPlace__NotOwnerOfToken");
 
     // https://ethereum.stackexchange.com/questions/117944/why-do-i-keep-receiving-this-error-revert-erc721-transfer-caller-is-not-owner
-    await nft.connect(addr2).setApprovalForAll(marketAddress, true);
+    /* await nft.connect(addr2).setApprovalForAll(marketAddress, true); */
+    await nft.connect(addr2).approve(marketAddress, 1);
     await market.connect(addr2).sellMarketToken(
       1,
       420 // , nftContractAddress

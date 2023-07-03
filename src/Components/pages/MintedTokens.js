@@ -45,7 +45,7 @@ const MintedTokens = (props) => {
                 </Button>
               </Box>
             )}
-            {props.network.chainId !== 5 && props.instance && (
+            {props.network.chainId !== 1287 && props.instance && (
               <Box sx={{ textAlign: "center" }}>
                 <Typography variant={"h2"} component={"h2"}>
                   Wrong network
@@ -54,11 +54,11 @@ const MintedTokens = (props) => {
                   variant={"outlined"}
                   onClick={(e) => props.changeNetworkToGoerli(e)}
                 >
-                  Connect to Goerli!
+                  Connect to Moonbase Alpha!
                 </Button>
               </Box>
             )}
-            {props.network.chainId === 5 && props.instance && (
+            {props.network.chainId === 1287 && props.instance && (
               <div
                 className="col-md-10 offset-md-1 "
                 style={{ marginTop: "6vh" }}
@@ -102,7 +102,7 @@ const MintedTokens = (props) => {
                                 </Typography>
 
                                 <Typography component={"p"} variant={"h3"}>
-                                  {index.price} Ether
+                                  {index.price} DEV
                                 </Typography>
                               </Box>
                             </Paper>
@@ -116,7 +116,7 @@ const MintedTokens = (props) => {
             )}
 
             {props.mintedNFTs.length === 0 &&
-              props.network.chainId === 5 &&
+              props.network.chainId === 1287 &&
               props.instance && (
                 <h1 className="text-center " style={{ marginTop: "4vh" }}>
                   You have not minted any NFTs yet!

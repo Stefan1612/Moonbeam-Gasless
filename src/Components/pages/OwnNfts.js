@@ -52,7 +52,7 @@ const OwnNfts = (props) => {
                 </Button>
               </Box>
             )}
-            {props.network.chainId !== 5 && props.instance && (
+            {props.network.chainId !== 1287 && props.instance && (
               <Box sx={{ textAlign: "center" }}>
                 <Typography variant={"h2"} component={"h2"}>
                   Wrong network
@@ -61,11 +61,11 @@ const OwnNfts = (props) => {
                   variant={"outlined"}
                   onClick={(e) => props.changeNetworkToGoerli(e)}
                 >
-                  Connect to Goerli!
+                  Connect to Moonbase Alpha!
                 </Button>
               </Box>
             )}
-            {props.network.chainId === 5 && props.instance && (
+            {props.network.chainId === 1287 && props.instance && (
               <Box sx={{ textAlign: "center", marginTop: "6vh" }}>
                 <Button
                   onClick={(e) => props.loadOwnNFTs()}
@@ -105,7 +105,7 @@ const OwnNfts = (props) => {
                                   </Typography>
 
                                   <Typography component={"p"} variant={"h3"}>
-                                    {index.price} Ether
+                                    {index.price} DEV
                                   </Typography>
                                   {/* <Typography style={{ color: "white" }}>
                                 Current Seller: &nbsp;
@@ -147,7 +147,7 @@ const OwnNfts = (props) => {
               ) */
             )}
             {props.ownNFTs.length === 0 &&
-              props.network.chainId === 5 &&
+              props.network.chainId === 1287 &&
               props.instance && (
                 <h1 className="text-center " style={{ marginTop: "4vh" }}>
                   You don't own any NFTs currently!
