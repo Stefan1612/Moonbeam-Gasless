@@ -42,6 +42,9 @@ import Header from "./Components/Header";
 import NFT from "./config/contracts/NFTV2.json";
 import NftMarketPlace from "./config/contracts/NftMarketPlaceV2.json";
 
+// import Batch interface ABI - needed to interact with batch precompile
+import Batch from "./config/contracts/Batch.json";
+
 // addresses
 import ContractAddress from "./config/contracts/map.json";
 
@@ -680,19 +683,24 @@ function App() {
   }
   // ---------------------------------------------------------------------
 
-  // generating the calldata needed for batching transactions
+  // -----------------------------------
+  // Generating calldata needed for tx batch
+  // -----------------------------------
 
   function generatingCallDataForMoonbeam(...arg) {
+    // calldata to approve specific nft ID
     let ABI = ["function approve(address to, uint256 tokenId)"];
-
     let iface = new ethers.utils.Interface(ABI);
     let dataOne = iface.encodeFunctionData("approve", [arg[0], arg[1]]);
     console.log(dataOne);
 
+    // calldata to sell specific nft ID and transfer ownership to marketplace
     ABI = ["function sellMarketToken(uint256 _tokenId, uint256 sellPrice)"];
     iface = new ethers.utils.Interface(ABI);
     let dataTwo = iface.encodeFunctionData("sellMarketToken", [arg[1], arg[2]]);
     console.log(dataTwo);
+
+    // return calldata
     return [dataOne, dataTwo];
   }
 
@@ -717,27 +725,32 @@ function App() {
       let id = marketItem.tokenId;
       id = id.toNumber();
 
-      /* await nftContract.setApprovalForAll(
-        ContractAddress[1287].NftMarketPlaceV2,
-        true
-      ); */
-
       // ---------------------------------------------------------------------
 
       // -----------------------------------
       // MOONBEAM: BATCHING
       // -----------------------------------
-      generatingCallDataForMoonbeam(
+
+      // generate calldata
+      let calldata = generatingCallDataForMoonbeam(
         ContractAddress[1287].NftMarketPlaceV2,
         id,
         previewPriceTwo
       );
-      await nftContract.approve(ContractAddress[1287].NftMarketPlaceV2, id);
 
-      await contract.sellMarketToken(
-        id,
-        previewPriceTwo /* ,
-        ContractAddress[1287].NFT */
+      // connect to already deployed batch precompile
+      let BatchPrecompile = new ethers.Contract(
+        "0x0000000000000000000000000000000000000808",
+        Batch.abi,
+        signer
+      );
+
+      // batch 1. approve function for singular nft and 2. sell market token
+      await BatchPrecompile.batchAll(
+        [ContractAddress[1287].NFTV2, ContractAddress[1287].NftMarketPlaceV2],
+        [],
+        [calldata[0], calldata[1]],
+        []
       );
     }
 

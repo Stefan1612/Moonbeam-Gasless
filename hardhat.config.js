@@ -6,6 +6,7 @@ require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
 require("solidity-coverage");
+require("@nomiclabs/hardhat-ethers");
 
 const {
   ETHER_SCAN_API_KEY,
